@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live NHL Scoreboard for Fire TV</title>
+<style>
+:root{--bg:#070b12;--panel:#101a29;--muted:#9eacbf;--text:#f5f8fc;--blue:#69cfff;--green:#50e2a0;--line:#26374c}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+body{display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 0%,#1a2a40 0%,#070b12 68%)}
+header{height:9vh;min-height:48px;padding:0 4vw;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);letter-spacing:.14em;font-weight:900;text-transform:uppercase}
+.brand{font-size:clamp(15px,2vw,28px)}.brand span{color:var(--blue)}
+#connection{font-size:clamp(10px,1vw,14px);color:var(--green)}
+main{flex:1;min-height:0;padding:1vh 4vw;display:flex;flex-direction:column;justify-content:center}
+#headline{text-align:center;color:var(--muted);font-size:clamp(12px,1.3vw,18px);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1vh}
+#match{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:2vw;min-height:44vh}
+.team{display:flex;flex-direction:column;align-items:center;min-width:0}
+.logo{width:min(17vw,22vh);height:min(17vw,22vh);object-fit:contain;filter:drop-shadow(0 8px 15px #0008)}
+.abbr{font-size:clamp(22px,3vw,44px);font-weight:900;letter-spacing:.07em;margin-top:1vh}
+.name{font-size:clamp(11px,1.3vw,18px);color:var(--muted);margin-top:.4vh;text-align:center}
+.score{font-size:clamp(76px,12vw,175px);font-weight:900;letter-spacing:-.06em;line-height:1}
+.center{display:flex;flex-direction:column;align-items:center;gap:1.4vh}
+#period{font-size:clamp(12px,1.35vw,20px);font-weight:900;letter-spacing:.13em;color:var(--blue);text-align:center}
+#clock{font-size:clamp(22px,3vw,43px);font-weight:900;white-space:nowrap}
+#status{font-size:clamp(10px,1vw,14px);color:var(--muted);letter-spacing:.1em}
+.stats{display:flex;justify-content:center;gap:clamp(28px,8vw,120px);margin:1vh 0 2vh}
+.stat{text-align:center}.label{font-size:clamp(10px,1vw,14px);color:var(--muted);letter-spacing:.13em;text-transform:uppercase}.value{font-size:clamp(25px,3vw,42px);font-weight:900;margin-top:.4vh}
+#goals{height:13vh;min-height:64px;background:#0c1522;border:1px solid var(--line);border-radius:12px;padding:1vh 2vw;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+#goalsTitle{font-size:clamp(10px,1vw,14px);color:var(--blue);font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.7vh}
+#goalList{display:flex;flex-wrap:wrap;gap:.5vh 1.5vw;font-size:clamp(11px,1.2vw,17px);line-height:1.3}
+.goal{white-space:normal}.goal b{color:#fff}.goal small{color:var(--muted)}
+footer{height:7vh;min-height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 4vw;color:var(--muted);font-size:clamp(10px,1vw,14px)}
+#dots{display:flex;gap:5px;align-items:center}.dot{width:6px;height:6px;border-radius:50%;background:#40516a}.dot.on{width:17px;border-radius:4px;background:var(--blue)}
+#empty{display:none;text-align:center;color:var(--muted);font-size:clamp(20px,3vw,40px);padding:4vh}
+#scoreAlert{display:none;position:fixed;z-index:10;top:9vh;left:50%;transform:translateX(-50%);padding:1.2vh 3vw;background:#e51b32;color:#fff;border:3px solid #fff;border-radius:12px;font-size:clamp(24px,4vw,58px);font-weight:1000;letter-spacing:.12em;white-space:nowrap;box-shadow:0 0 35px #ff173b99;text-shadow:0 2px 4px #600}
+#scoreAlert.show{display:block;animation:scoreFlash .65s steps(2,end) infinite}
+@keyframes scoreFlash{0%,100%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.25;transform:translateX(-50%) scale(.97)} }
+@media(max-aspect-ratio:1/1){.logo{width:18vw;height:18vw}.score{font-size:13vw}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span>ICE</span> / NHL SCOREBOARD</div><div id="connection">● CONNECTING</div></header>
+<div id="scoreAlert" role="status" aria-live="assertive">⚡ SCORE UPDATE ⚡</div>
+<main>
+<div id="headline">Loading NHL games…</div>
+<section id="match">
+ <div class="team"><img id="awayLogo" class="logo" alt=""><div id="awayAbbr" class="abbr">---</div><div id="awayName" class="name">Away</div><div id="awayScore" class="score">–</div></div>
+ <div class="center"><div id="period">LIVE NHL</div><div id="clock">--:--</div><div id="status">UPDATING SCORES</div></div>
+ <div class="team"><img id="homeLogo" class="logo" alt=""><div id="homeAbbr" class="abbr">---</div><div id="homeName" class="name">Home</div><div id="homeScore" class="score">–</div></div>
+</section>
+<section class="stats"><div class="stat"><div class="label">Away shots</div><div id="awayShots" class="value">—</div></div><div class="stat"><div class="label">Home shots</div><div id="homeShots" class="value">—</div></div></section>
+<section id="goals"><div id="goalsTitle">Recent goals</div><div id="goalList">Waiting for live data…</div></section>
+<div id="empty">No NHL games in the current feed.<br><span style="font-size:.55em">This screen will keep checking.</span></div>
+</main>
+<footer><div id="gameCount">GAME 0 / 0</div><div id="dots"></div><div id="updated">Waiting for connection…</div></footer>
+<script>
+/* Fire TV standalone version. The CORS proxy allows browser access to the public NHL feed.
+   This is an unofficial feed and may change or occasionally be unavailable. */
+const NHL="https://api-web.nhle.com/v1";
+const PROXY="https://proxy.cors.dev/";
+const POLL=15000, ROTATE=18000;
+let games=[],idx=0,activeId=null,fetching=false;
+let scoreSnapshot=null,alertUntil=0;
+const ALERT_MS=10000;
+const el=id=>document.getElementById(id);
+function put(id,v){el(id).textContent=(v===null||v===undefined||v==="")?"—":String(v)}
+async function api(path){
+ const res=await fetch(PROXY+NHL+path,{cache:"no-store",credentials:"omit"});
+ if(!res.ok)throw new Error("Feed HTTP "+res.status);
+ return res.json();
+}
+function objName(v){return typeof v==="string"?v:(v?.default||v?.fr||"")}
+function normTeam(t){
+ const ab=t?.abbrev||t?.triCode||"???";
+ return {abbrev:ab,name:objName(t?.commonName)||objName(t?.name)||ab,place:objName(t?.placeName)||"",full:(objName(t?.placeName)+" "+(objName(t?.commonName)||objName(t?.name)||ab)).trim(),score:t?.score??0,shots:t?.sog??t?.shotsOnGoal??null,logo:t?.logo||t?.darkLogo||`https://assets.nhle.com/logos/nhl/svg/${ab}_light.svg`};
+}
+function normalize(g){
+ const p=g.periodDescriptor||{},c=g.clock||{},state=String(g.gameState||g.gameStatus||"PRE").toUpperCase();
+ let status=(["LIVE","CRIT","IN_PROGRESS"].includes(state))?"LIVE":(["FINAL","OFF","OVER","END","FINAL_OT","FINAL_SO"].includes(state)?"FINAL":"UPCOMING");
+ let clock=c.inIntermission?"INTERMISSION":(c.timeRemaining||"");
+ return {id:g.id,gameDate:g.gameDate,start:g.startTimeUTC||g.startTime||"",state,status,period:p.number??g.period??null,periodType:p.periodType||"",clock,away:normTeam(g.awayTeam||{}),home:normTeam(g.homeTeam||{}),goals:g.goals||[]};
+}
+function periodLabel(g){
+ if(g.status==="UPCOMING")return "UPCOMING";
+ if(g.status==="FINAL")return "FINAL";
+ if(g.clock==="INTERMISSION")return "INTERMISSION";
+ if(g.periodType==="OT")return "OVERTIME";
+ if(g.periodType==="SO")return "SHOOTOUT";
+ return g.period?(g.period<=3?`PERIOD ${g.period}`:`${g.period-3}OT`):"LIVE";
+}
+function clockLabel(g){
+ if(g.status==="UPCOMING")return g.start?new Date(g.start).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"SOON";
+ if(g.status==="FINAL")return "FINAL";
+ if(g.clock==="INTERMISSION")return "BREAK";
+ return g.clock||"LIVE";
+}
+function timeLabel(g){
+ const s=g.start||g.gameDate;if(!s)return "NHL GAME";
+ const d=new Date(s);return Number.isNaN(d.getTime())?"NHL GAME":d.toLocaleString([],{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+}
+function logo(id,url){const im=el(id);im.onerror=()=>im.style.visibility="hidden";im.onload=()=>im.style.visibility="visible";im.src=url}
+function renderDots(){
+ el("dots").innerHTML="";
+ games.slice(0,40).forEach((g,i)=>{let d=document.createElement("span");d.className="dot"+(i===idx?" on":"");el("dots").appendChild(d)});
+}
+function render(){
+ if(!games.length){el("match").style.display="none";document.querySelector(".stats").style.display="none";el("goals").style.display="none";el("empty").style.display="block";put("headline","NHL LIVE SCOREBOARD");put("gameCount","NO GAMES");renderDots();return}
+ el("match").style.display="grid";document.querySelector(".stats").style.display="flex";el("goals").style.display="flex";el("empty").style.display="none";
+ idx=(idx+games.length)%games.length;const g=games[idx];
+ put("headline",`${g.away.full} at ${g.home.full}  •  ${timeLabel(g)}`);
+ for(const side of ["away","home"]){const t=g[side];put(side+"Abbr",t.abbrev);put(side+"Name",t.full);put(side+"Score",t.score);put(side+"Shots",t.shots);logo(side+"Logo",t.logo)}
+ put("period",periodLabel(g));put("clock",clockLabel(g));put("status",g.status==="LIVE"?"LIVE GAME":g.status==="FINAL"?"GAME COMPLETE":"PUCK DROP / SCHEDULED");
+ put("gameCount",`GAME ${idx+1} / ${games.length}`);el("connection").textContent=g.status==="LIVE"?"● LIVE GAME":"● NHL FEED CONNECTED";
+ renderDots();renderGoals(g);
+ if(activeId!==g.id){activeId=g.id;loadDetail(g)}
+}
+function renderGoals(g){
+ const goals=g.goals||[];el("goalList").innerHTML="";
+ const recent=goals.slice(-4).reverse();
+ if(!recent.length){put("goalList",g.status==="UPCOMING"?"No goals yet — game has not started.":"No goal events listed yet.");return}
+ recent.forEach(goal=>{
+  const n=goal.name?.default||goal.name||goal.scorerName||"Goal";
+  const team=goal.teamAbbrev||goal.teamAbbrev?.default||"";
+  const period=goal.periodDescriptor?.number||goal.period||"";
+  const tm=goal.timeInPeriod||goal.timeRemaining||"";
+  const span=document.createElement("span");span.className="goal";
+  const b=document.createElement("b");b.textContent=(team?team+" · ":"")+n;
+  const small=document.createElement("small");small.textContent=` ${tm}${period?" · P"+period:""}`;
+  span.append(b,small);el("goalList").appendChild(span);
+ });
+}
+async function loadDetail(g){
+ try{
+  const d=await api(`/gamecenter/${g.id}/landing`);
+  if(games[idx]?.id!==g.id)return;
+  const blocks=d.scoring||d.summary?.scoring||[];
+  let goals=[];
+  for(const p of blocks){for(const x of (p.goals||[])){
+   const name=x.name?.default||x.scorerName||"Goal";
+   const assists=(x.assists||[]).map(a=>a.name?.default||a.name||"").filter(Boolean);
+   goals.push({name,teamAbbrev:x.teamAbbrev||"",timeInPeriod:x.timeInPeriod||"",periodDescriptor:p.periodDescriptor||{},assists});
+  }}
+  if(goals.length){el("goalList").innerHTML="";goals.slice(-4).reverse().forEach(x=>{
+   const span=document.createElement("span");span.className="goal";const b=document.createElement("b");b.textContent=(x.teamAbbrev?x.teamAbbrev+" · ":"")+x.name;
+   const small=document.createElement("small");small.textContent=` ${x.timeInPeriod}${x.periodDescriptor?.number?" · P"+x.periodDescriptor.number:""}${x.assists?.length?" · "+x.assists.join(", "):""}`;span.append(b,small);el("goalList").appendChild(span);
+  })}
+  const a=d.awayTeam||{},h=d.homeTeam||{};
+  if(a.sog!=null)put("awayShots",a.sog);if(h.sog!=null)put("homeShots",h.sog);
+ }catch(e){console.warn("Game detail unavailable",e)}
+}
+function showScoreAlert(gameId){
+ const found=games.findIndex(g=>String(g.id)===String(gameId));
+ if(found>=0)idx=found;
+ alertUntil=Date.now()+ALERT_MS;
+ el("scoreAlert").classList.add("show");
+ activeId=null;
+}
+function updateAlert(){
+ if(Date.now()>=alertUntil)el("scoreAlert").classList.remove("show");
+}
+async function refresh(){
+ if(fetching)return;fetching=true;
+ try{
+  let data;
+  try{data=await api("/score/now")}catch(e){data=await api("/scoreboard/now")}
+  let raw=data.games||[];
+  if(!raw.length){try{const other=await api("/scoreboard/now");raw=other.games||[]}catch(e){}}
+  const old=games[idx]?.id;
+  const incoming=raw.map(normalize);
+  let changedGameId=null;
+  if(scoreSnapshot){
+   for(const g of incoming){
+    const previous=scoreSnapshot[String(g.id)];
+    if(previous && (Number(g.away.score)!==previous.away || Number(g.home.score)!==previous.home)){
+     changedGameId=g.id;
+    }
+   }
+  }
+  scoreSnapshot=Object.fromEntries(incoming.map(g=>[String(g.id),{away:Number(g.away.score),home:Number(g.home.score)}]));
+  games=incoming;
+  const order={LIVE:0,UPCOMING:1,FINAL:2};games.sort((a,b)=>(order[a.status]??3)-(order[b.status]??3)||(a.start||"").localeCompare(b.start||""));
+  if(changedGameId!==null){showScoreAlert(changedGameId)}
+  else if(old && Date.now()>=alertUntil){const n=games.findIndex(g=>g.id===old);idx=n>=0?n:0}
+  else if(!old)idx=0;
+  render();updateAlert();put("updated","Updated "+new Date().toLocaleTimeString());
+ }catch(e){el("connection").textContent="● RETRYING CONNECTION";put("updated","NHL data temporarily unavailable");console.error(e)}
+ finally{fetching=false}
+}
+function rotate(){updateAlert();if(Date.now()<alertUntil)return;if(games.length>1){idx=(idx+1)%games.length;activeId=null;render()}}
+document.addEventListener("keydown",e=>{if(["ArrowRight"," "].includes(e.key)){e.preventDefault();rotate()}else if(e.key==="ArrowLeft"){e.preventDefault();idx=(idx-1+games.length)%Math.max(1,games.length);activeId=null;render()}else if(e.key.toLowerCase()==="r")refresh()});
+refresh();setInterval(refresh,POLL);setInterval(rotate,ROTATE);
+</script>
+</body></html>
