@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live NHL Scoreboard for Fire TV</title>
+<style>
+:root{--bg:#070b12;--panel:#101a29;--muted:#9eacbf;--text:#f5f8fc;--blue:#69cfff;--green:#50e2a0;--line:#26374c}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+body{display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 0%,#1a2a40 0%,#070b12 68%)}
+header{height:9vh;min-height:48px;padding:0 4vw;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);letter-spacing:.14em;font-weight:900;text-transform:uppercase}
+.brand{font-size:clamp(15px,2vw,28px)}.brand span{color:var(--blue)}
+#connection{font-size:clamp(10px,1vw,14px);color:var(--green)}
+main{flex:1;min-height:0;padding:1vh 4vw;display:flex;flex-direction:column;justify-content:center;position:relative;isolation:isolate}
+main::before,main::after{content:"";position:absolute;z-index:-1;top:0;bottom:0;width:50%;background-repeat:no-repeat;background-position:center;background-size:min(65vh,55vw);opacity:.13;pointer-events:none;filter:drop-shadow(0 0 18px #000)}
+main::before{left:0;background-image:var(--away-bg,none);background-position:40% center}
+main::after{right:0;background-image:var(--home-bg,none);background-position:60% center}
+main>*{position:relative;z-index:1}
+#headline{text-align:center;color:var(--muted);font-size:clamp(12px,1.3vw,18px);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1vh}
+#match{display:grid;grid-template-columns:minmax(115px,.72fr) minmax(0,1fr) auto minmax(0,1fr) minmax(115px,.72fr);align-items:center;gap:1.1vw;min-height:44vh}
+.team{display:flex;flex-direction:column;align-items:center;min-width:0}
+.logo{width:min(13vw,18vh);height:min(13vw,18vh);object-fit:contain;filter:drop-shadow(0 8px 15px #0008)}
+.edgeStats{display:flex;flex-direction:column;justify-content:center;gap:1.1vh;min-width:0;padding:.8vh .7vw;background:#0b1421c9;border:1px solid #26374c;border-radius:10px;align-self:center}
+.edgeStats.away{border-left:3px solid #69cfff;text-align:left}
+.edgeStats.home{border-right:3px solid #69cfff;text-align:right}
+.edgeTitle{font-size:clamp(10px,.9vw,13px);font-weight:900;letter-spacing:.1em;color:var(--blue);text-transform:uppercase;margin-bottom:.2vh}
+.edgeRow{display:flex;justify-content:space-between;gap:.7vw;align-items:baseline;font-size:clamp(10px,1vw,14px);white-space:nowrap}
+.edgeRow span{color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.edgeRow b{font-size:clamp(13px,1.3vw,18px);font-weight:900}
+.edgeLeader{font-size:clamp(9px,.9vw,13px);line-height:1.25;color:#e6edf7;white-space:normal;margin-top:.2vh}
+.edgeStats.home .edgeRow{flex-direction:row-reverse}
+.edgeStats.home .edgeTitle{text-align:right}
+.abbr{font-size:clamp(22px,3vw,44px);font-weight:900;letter-spacing:.07em;margin-top:1vh}
+.name{font-size:clamp(11px,1.3vw,18px);color:var(--muted);margin-top:.4vh;text-align:center}
+.score{font-size:clamp(76px,12vw,175px);font-weight:900;letter-spacing:-.06em;line-height:1}
+.center{display:flex;flex-direction:column;align-items:center;gap:1.4vh}
+#period{font-size:clamp(12px,1.35vw,20px);font-weight:900;letter-spacing:.13em;color:var(--blue);text-align:center}
+#clock{font-size:clamp(22px,3vw,43px);font-weight:900;white-space:nowrap}
+#status{font-size:clamp(10px,1vw,14px);color:var(--muted);letter-spacing:.1em}
+.stats{display:flex;justify-content:center;gap:clamp(28px,8vw,120px);margin:1vh 0 2vh}
+.stat{text-align:center}.label{font-size:clamp(10px,1vw,14px);color:var(--muted);letter-spacing:.13em;text-transform:uppercase}.value{font-size:clamp(25px,3vw,42px);font-weight:900;margin-top:.4vh}
+#powerPlay{display:none;height:10vh;min-height:62px;background:#12231d;border:2px solid #50e2a0;border-radius:12px;padding:.8vh 1.6vw;margin-bottom:1vh;align-items:center;justify-content:space-between;gap:1.5vw}
+#powerPlay.active{display:flex}
+#ppTitle{font-size:clamp(13px,1.7vw,24px);font-weight:1000;color:#50e2a0;letter-spacing:.1em}
+#ppClock{font-size:clamp(22px,3vw,42px);font-weight:1000;white-space:nowrap}
+#ppDetails{font-size:clamp(10px,1.1vw,16px);color:#e6fff1;text-align:right;max-width:48%;line-height:1.25}
+#ppSituation{font-size:clamp(10px,1vw,14px);color:#b5ffd9;margin-top:.3vh}
+#ppAlert{display:none;position:fixed;z-index:11;top:19vh;left:50%;transform:translateX(-50%);padding:1vh 2.5vw;background:#00a86b;color:#fff;border:3px solid #d8ffea;border-radius:12px;font-size:clamp(20px,3.2vw,46px);font-weight:1000;letter-spacing:.1em;white-space:nowrap;box-shadow:0 0 35px #00ff9a88;text-shadow:0 2px 4px #004c30}
+#ppAlert.show{display:block;animation:ppBannerFlash .65s steps(2,end) infinite}
+@keyframes ppBannerFlash{0%,100%{opacity:1}50%{opacity:.2}}
+#powerPlay.flash{animation:ppFlash .7s steps(2,end) infinite}
+@keyframes ppFlash{50%{opacity:.25}}
+#goals{height:11vh;min-height:58px;background:#0c1522;border:1px solid var(--line);border-radius:12px;padding:1vh 2vw;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+#goalsTitle{font-size:clamp(10px,1vw,14px);color:var(--blue);font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.7vh}
+#goalList{display:flex;flex-wrap:wrap;gap:.5vh 1.5vw;font-size:clamp(11px,1.2vw,17px);line-height:1.3}
+.goal{white-space:normal}.goal b{color:#fff}.goal small{color:var(--muted)}
+footer{height:7vh;min-height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 4vw;color:var(--muted);font-size:clamp(10px,1vw,14px)}
+#dots{display:flex;gap:5px;align-items:center}.dot{width:6px;height:6px;border-radius:50%;background:#40516a}.dot.on{width:17px;border-radius:4px;background:var(--blue)}
+#empty{display:none;text-align:center;color:var(--muted);font-size:clamp(20px,3vw,40px);padding:4vh}
+#scoreAlert{display:none;position:fixed;z-index:10;top:9vh;left:50%;transform:translateX(-50%);padding:1.2vh 3vw;background:#e51b32;color:#fff;border:3px solid #fff;border-radius:12px;font-size:clamp(24px,4vw,58px);font-weight:1000;letter-spacing:.12em;white-space:nowrap;box-shadow:0 0 35px #ff173b99;text-shadow:0 2px 4px #600}
+#scoreAlert.show{display:block;animation:scoreFlash .65s steps(2,end) infinite}
+@keyframes scoreFlash{0%,100%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.25;transform:translateX(-50%) scale(.97)} }
+@media(max-aspect-ratio:1/1){#match{grid-template-columns:minmax(76px,.65fr) minmax(0,1fr) auto minmax(0,1fr) minmax(76px,.65fr);gap:.5vw}.logo{width:10vw;height:10vw}.score{font-size:10vw}.edgeStats{padding:.5vh .4vw;gap:.8vh}.edgeRow{font-size:9px}.edgeRow b{font-size:12px}.edgeLeader{font-size:9px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span>ICE</span> / NHL SCOREBOARD</div><div id="connection">● CONNECTING</div></header>
+<div id="scoreAlert" role="status" aria-live="assertive">⚡ SCORE UPDATE ⚡</div>
+<div id="ppAlert" role="status" aria-live="assertive">⚡ POWER PLAY ⚡</div>
+<main>
+<div id="headline">Loading NHL games…</div>
+<section id="match">
+ <aside id="awayBoxscore" class="edgeStats away"><div class="edgeTitle">Away stats</div><div class="edgeRow"><span>Shots</span><b id="awayEdgeShots">—</b></div><div class="edgeRow"><span>Hits</span><b id="awayHits">—</b></div><div class="edgeRow"><span>Blocks</span><b id="awayBlocks">—</b></div><div class="edgeRow"><span>Faceoff</span><b id="awayFaceoff">—</b></div><div id="awayLeader" class="edgeLeader">Leading scorer: —</div></aside>
+ <div class="team"><img id="awayLogo" class="logo" alt=""><div id="awayAbbr" class="abbr">---</div><div id="awayName" class="name">Away</div><div id="awayScore" class="score">–</div></div>
+ <div class="center"><div id="period">LIVE NHL</div><div id="clock">--:--</div><div id="status">UPDATING SCORES</div></div>
+ <div class="team"><img id="homeLogo" class="logo" alt=""><div id="homeAbbr" class="abbr">---</div><div id="homeName" class="name">Home</div><div id="homeScore" class="score">–</div></div>
+ <aside id="homeBoxscore" class="edgeStats home"><div class="edgeTitle">Home stats</div><div class="edgeRow"><span>Shots</span><b id="homeEdgeShots">—</b></div><div class="edgeRow"><span>Hits</span><b id="homeHits">—</b></div><div class="edgeRow"><span>Blocks</span><b id="homeBlocks">—</b></div><div class="edgeRow"><span>Faceoff</span><b id="homeFaceoff">—</b></div><div id="homeLeader" class="edgeLeader">Leading scorer: —</div></aside>
+</section>
+<section class="stats"><div class="stat"><div class="label">Away shots</div><div id="awayShots" class="value">—</div></div><div class="stat"><div class="label">Home shots</div><div id="homeShots" class="value">—</div></div></section>
+<section id="powerPlay" aria-live="assertive"><div><div id="ppTitle">POWER PLAY</div><div id="ppTeam">—</div><div id="ppSituation">SITUATION —</div></div><div id="ppClock">2:00</div><div id="ppDetails">Penalty information loading…</div></section>
+<section id="goals"><div id="goalsTitle">Recent goals</div><div id="goalList">Waiting for live data…</div></section>
+<div id="empty">No NHL games in the current feed.<br><span style="font-size:.55em">This screen will keep checking.</span></div>
+</main>
+<footer><div id="gameCount">GAME 0 / 0</div><div id="dots"></div><div id="updated">Waiting for connection…</div></footer>
+<script>
+/* Fire TV standalone version. The CORS proxy allows browser access to the public NHL feed.
+   This is an unofficial feed and may change or occasionally be unavailable. */
+const NHL="https://api-web.nhle.com/v1";
+const PROXY="https://proxy.cors.dev/";
+const POLL=15000, ROTATE=18000;
+let games=[],idx=0,activeId=null,fetching=false;
+let scoreSnapshot=null,alertUntil=0,ppSnapshot={},ppAlertUntil=0,ppActiveByGame={};
+const ALERT_MS=10000, PP_ALERT_MS=9000;
+const el=id=>document.getElementById(id);
+function put(id,v){el(id).textContent=(v===null||v===undefined||v==="")?"—":String(v)}
+async function api(path){
+ const res=await fetch(PROXY+NHL+path,{cache:"no-store",credentials:"omit"});
+ if(!res.ok)throw new Error("Feed HTTP "+res.status);
+ return res.json();
+}
+function objName(v){return typeof v==="string"?v:(v?.default||v?.fr||"")}
+function normTeam(t){
+ const ab=t?.abbrev||t?.triCode||"???";
+ return {abbrev:ab,name:objName(t?.commonName)||objName(t?.name)||ab,place:objName(t?.placeName)||"",full:(objName(t?.placeName)+" "+(objName(t?.commonName)||objName(t?.name)||ab)).trim(),score:t?.score??0,shots:t?.sog??t?.shotsOnGoal??null,logo:t?.logo||t?.darkLogo||`https://assets.nhle.com/logos/nhl/svg/${ab}_light.svg`};
+}
+function normalize(g){
+ const p=g.periodDescriptor||{},c=g.clock||{},state=String(g.gameState||g.gameStatus||"PRE").toUpperCase();
+ let status=(["LIVE","CRIT","IN_PROGRESS"].includes(state))?"LIVE":(["FINAL","OFF","OVER","END","FINAL_OT","FINAL_SO"].includes(state)?"FINAL":"UPCOMING");
+ let clock=c.inIntermission?"INTERMISSION":(c.timeRemaining||"");
+ return {id:g.id,gameDate:g.gameDate,start:g.startTimeUTC||g.startTime||"",state,status,period:p.number??g.period??null,periodType:p.periodType||"",clock,away:normTeam(g.awayTeam||{}),home:normTeam(g.homeTeam||{}),goals:g.goals||[],powerPlay:g.powerPlay??g.powerPlayInfo??g.situation?.powerPlay??null,situation:g.situation||null,situationCode:g.situationCode||g.situation?.situationCode||null,raw:g};
+}
+function periodLabel(g){
+ if(g.status==="UPCOMING")return "UPCOMING";
+ if(g.status==="FINAL")return "FINAL";
+ if(g.clock==="INTERMISSION")return "INTERMISSION";
+ if(g.periodType==="OT")return "OVERTIME";
+ if(g.periodType==="SO")return "SHOOTOUT";
+ return g.period?(g.period<=3?`PERIOD ${g.period}`:`${g.period-3}OT`):"LIVE";
+}
+function clockLabel(g){
+ if(g.status==="UPCOMING")return g.start?new Date(g.start).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"SOON";
+ if(g.status==="FINAL")return "FINAL";
+ if(g.clock==="INTERMISSION")return "BREAK";
+ return g.clock||"LIVE";
+}
+function timeLabel(g){
+ const s=g.start||g.gameDate;if(!s)return "NHL GAME";
+ const d=new Date(s);return Number.isNaN(d.getTime())?"NHL GAME":d.toLocaleString([],{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+}
+function logo(id,url){const im=el(id);im.onerror=()=>im.style.visibility="hidden";im.onload=()=>im.style.visibility="visible";im.src=url}
+function renderDots(){
+ el("dots").innerHTML="";
+ games.slice(0,40).forEach((g,i)=>{let d=document.createElement("span");d.className="dot"+(i===idx?" on":"");el("dots").appendChild(d)});
+}
+function render(){
+ if(!games.length){el("match").style.display="none";document.querySelector(".stats").style.display="none";el("goals").style.display="none";el("powerPlay").classList.remove("active","flash");el("empty").style.display="block";put("headline","NHL LIVE SCOREBOARD");put("gameCount","NO GAMES");renderDots();return}
+ el("match").style.display="grid";document.querySelector(".stats").style.display="flex";el("goals").style.display="flex";el("empty").style.display="none";
+ idx=(idx+games.length)%games.length;const g=games[idx];
+ document.querySelector("main").style.setProperty("--away-bg",`url("${g.away.logo}")`);document.querySelector("main").style.setProperty("--home-bg",`url("${g.home.logo}")`);
+ put("headline",`${g.away.full} at ${g.home.full}  •  ${timeLabel(g)}`);
+ for(const side of ["away","home"]){const t=g[side];put(side+"Abbr",t.abbrev);put(side+"Name",t.full);put(side+"Score",t.score);put(side+"Shots",t.shots);logo(side+"Logo",t.logo)}
+ put("period",periodLabel(g));put("clock",clockLabel(g));put("status",g.status==="LIVE"?"LIVE GAME":g.status==="FINAL"?"GAME COMPLETE":"PUCK DROP / SCHEDULED");
+ put("gameCount",`GAME ${idx+1} / ${games.length}`);el("connection").textContent=g.status==="LIVE"?"● LIVE GAME":"● NHL FEED CONNECTED";
+ renderDots();renderGoals(g);renderPowerPlay(g);
+ if(activeId!==g.id){activeId=g.id;loadDetail(g)}
+}
+function firstText(...values){for(const v of values){if(v===null||v===undefined)continue;if(typeof v==="string"&&v.trim())return v;if(typeof v==="number")return String(v);if(typeof v==="object"){const t=v.default||v.fullName||v.name;if(typeof t==="string"&&t.trim())return t}}return ""}
+function penaltyRows(d){
+ const root=d?.summary?.penalties||d?.penalties||[];let out=[];
+ const add=(x,period)=>{if(!x||typeof x!=="object")return;const player=firstText(x.committedByPlayer,x.playerName,x.descKey,x.name);const minutes=x.duration??x.penaltyMinutes??x.minutes??x.durationMinutes;const team=firstText(x.teamAbbrev,x.team?.abbrev,x.teamName,x.team);const desc=firstText(x.descKey,x.type,x.penaltyType,x.description);const tm=firstText(x.timeInPeriod,x.time);if(player||desc||minutes)out.push({player,minutes,team,desc,tm,period:period||x.periodDescriptor?.number||x.period||""})};
+ if(Array.isArray(root)){root.forEach(block=>{if(Array.isArray(block?.penalties))block.penalties.forEach(x=>add(x,block.periodDescriptor?.number||block.period));else add(block,block.periodDescriptor?.number||block.period)})}
+ else if(root&&typeof root==="object"){Object.values(root).forEach(v=>{if(Array.isArray(v))v.forEach(x=>add(x));else if(v&&Array.isArray(v.penalties))v.penalties.forEach(x=>add(x,v.period))})}
+ return out;
+}
+function getPowerPlay(g,d=null){
+ const sit=d?.situation||g.situation||{};
+ const code=String(d?.situationCode||sit?.situationCode||g.situationCode||g.raw?.situationCode||"");
+ // NHL situationCode is commonly four digits: home goalie, home skaters, away skaters, away goalie.
+ let homeSkaters=null,awaySkaters=null;
+ if(/^\d{4}$/.test(code)){homeSkaters=Number(code[1]);awaySkaters=Number(code[2]);}
+ const candidates=[g.powerPlay,g.situation?.powerPlay,g.raw?.powerPlay,g.raw?.powerPlayInfo,d?.powerPlay,d?.situation?.powerPlay];
+ let pp=candidates.find(x=>x===true||(x&&typeof x==="object"&&(x.active===true||x.isActive===true||x.teamAbbrev||x.team||x.timeRemaining||x.clock)));
+ if(pp===true)pp={active:true};if(!pp||typeof pp!=="object")pp={};
+ let team=firstText(pp.teamAbbrev,pp.abbrev,pp.team?.abbrev,pp.team?.name,pp.teamName,pp.team);
+ if(!team&&homeSkaters!==null&&awaySkaters!==null&&homeSkaters!==awaySkaters){team=homeSkaters>awaySkaters?g.home.abbrev:g.away.abbrev;}
+ const active=pp.active===true||pp.isActive===true||!!team||(homeSkaters!==null&&awaySkaters!==null&&homeSkaters!==awaySkaters&&Math.max(homeSkaters,awaySkaters)>=4);
+ if(!active)return null;
+ const penalties=penaltyRows(d);
+ const relevant=penalties.filter(p=>!p.team||p.team=== (team===g.home.abbrev?g.away.abbrev:team===g.away.abbrev?g.home.abbrev:""));
+ const last=relevant[relevant.length-1]||penalties[penalties.length-1]||{};
+ const time=firstText(pp.timeRemaining,pp.clock,pp.penaltyClock,pp.time)||computePpClock(g,last,d);
+ const player=firstText(pp.playerName,pp.committedByPlayer,pp.player?.name,last.player);
+ const penalty=firstText(pp.penaltyType,pp.penalty,pp.description,pp.descKey,last.desc);
+ const mins=firstText(pp.penaltyMinutes,pp.duration,pp.minutes,last.minutes);
+ const situation=homeSkaters!==null&&awaySkaters!==null?`${g.away.abbrev} ${awaySkaters} · ${g.home.abbrev} ${homeSkaters}`:firstText(sit?.situationDescription,sit?.description,pp.situation)||"MAN ADVANTAGE";
+ return {team,time,player,penalty,mins,active:true,situation,homeSkaters,awaySkaters};
+}
+function computePpClock(g,penalty,d){
+ // Approximate from penalty duration and its period/time when exposed by the feed.
+ const duration=Number(penalty?.minutes);
+ const currentRemaining=Number(d?.clock?.secondsRemaining??g.raw?.clock?.secondsRemaining);
+ const eventTime=penalty?.tm;
+ const eventPeriod=Number(penalty?.period||0),currentPeriod=Number(d?.periodDescriptor?.number||d?.period||g.period||0);
+ if(!Number.isFinite(duration)||duration<=0||!Number.isFinite(currentRemaining)||!eventTime||!eventPeriod||!currentPeriod)return "PP ACTIVE";
+ const [mm,ss]=String(eventTime).split(":").map(Number);if(!Number.isFinite(mm)||!Number.isFinite(ss))return "PP ACTIVE";
+ const periodLength=1200;
+ const eventElapsed=mm*60+ss;
+ const currentElapsed=periodLength-currentRemaining;
+ const elapsed=(currentPeriod===eventPeriod)?Math.max(0,currentElapsed-eventElapsed):Math.max(0,(periodLength-eventElapsed)+(currentPeriod-eventPeriod-1)*periodLength+currentElapsed);
+ const left=Math.max(0,Math.ceil(duration*60-elapsed));
+ return `${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}`;
+}
+function renderPowerPlay(g,d=null){
+ const pp=getPowerPlay(g,d);const panel=el("powerPlay");
+ if(!pp||!pp.active){panel.classList.remove("active","flash");return}
+ panel.classList.add("active");put("ppTitle","⚡ POWER PLAY");put("ppTeam",`${pp.team||"Team"} with the man advantage`);put("ppSituation",`SITUATION ${pp.situation||"MAN ADVANTAGE"}`);put("ppClock",pp.time||"PP ACTIVE");
+ const parts=[];if(pp.player)parts.push(`Penalized: ${pp.player}`);if(pp.penalty)parts.push(`Penalty: ${pp.penalty}`);if(pp.mins)parts.push(`${pp.mins} min`);
+ put("ppDetails",parts.join(" · ")||"Penalty details unavailable in current feed");
+ if(Date.now()<ppAlertUntil)panel.classList.add("flash");else panel.classList.remove("flash");
+}
+function renderGoals(g){
+ const goals=g.goals||[];el("goalList").innerHTML="";
+ const recent=goals.slice(-4).reverse();
+ if(!recent.length){put("goalList",g.status==="UPCOMING"?"No goals yet — game has not started.":"No goal events listed yet.");return}
+ recent.forEach(goal=>{
+  const n=goal.name?.default||goal.name||goal.scorerName||"Goal";
+  const team=goal.teamAbbrev||goal.teamAbbrev?.default||"";
+  const period=goal.periodDescriptor?.number||goal.period||"";
+  const tm=goal.timeInPeriod||goal.timeRemaining||"";
+  const span=document.createElement("span");span.className="goal";
+  const b=document.createElement("b");b.textContent=(team?team+" · ":"")+n;
+  const small=document.createElement("small");small.textContent=` ${tm}${period?" · P"+period:""}`;
+  span.append(b,small);el("goalList").appendChild(span);
+ });
+}
+function statNumber(obj,...keys){for(const key of keys){const v=obj?.[key];if(v!==undefined&&v!==null&&v!=="")return v}return null}
+function formatStat(v,suffix=""){if(v===undefined||v===null||v==="")return "—";return `${v}${suffix}`}
+function teamStatsFromLanding(d,side){
+ const ab=side==="away"?d.awayTeam:d.homeTeam;
+ const out={shots:statNumber(ab,"sog","shotsOnGoal","shots"),hits:null,blocks:null,faceoff:null,leader:null};
+ const groups=d.teamGameStats||d.summary?.teamGameStats||[];
+ const arr=Array.isArray(groups)?groups:(Array.isArray(groups?.[side])?groups[side]:[]);
+ const keys={hits:["hits","hit"],blocks:["blockedShots","blocks","blocked-shots"],faceoff:["faceoffWinningPctg","faceoffWinPctg","faceoffPercentage","faceoff-win-pctg"],shots:["sog","shotsOnGoal","shots-on-goal"]};
+ for(const row of arr){const cat=String(row.category||row.stat||row.name||row.key||"").toLowerCase();const val=side==="away"?(row.awayValue??row.away??row.valueAway):(row.homeValue??row.home??row.valueHome);for(const [k,variants] of Object.entries(keys)){if(variants.some(x=>cat.includes(x.toLowerCase()))&&val!=null)out[k]=val}}
+ if(out.faceoff!=null){const n=Number(out.faceoff);out.faceoff=Number.isFinite(n)?`${Math.round(n>1?n:n*100)}%`:out.faceoff}
+ const pbg=d.playerByGameStats||d.boxscore?.playerByGameStats||{};const teamGroup=pbg[side+"Team"]||pbg[side]||{};
+ const players=[...(teamGroup.forwards||[]),...(teamGroup.defense||[]),...(teamGroup.defencemen||[])];
+ if(players.length){players.sort((a,b)=>((Number(b.goals)||0)+(Number(b.assists)||0))-((Number(a.goals)||0)+(Number(a.assists)||0))||((Number(b.shots)||0)-(Number(a.shots)||0)));const p=players[0];const name=firstText(p.name,p.firstName,p.lastName,p.playerName);const g=Number(p.goals)||0,a=Number(p.assists)||0;if(name)out.leader=`Leader: ${name} · ${g}G ${a}A`}
+ return out;
+}
+function renderBoxscore(d){
+ for(const side of ["away","home"]){const s=teamStatsFromLanding(d,side);put(side+"EdgeShots",s.shots);put(side+"Shots",s.shots);put(side+"Hits",s.hits);put(side+"Blocks",s.blocks);put(side+"Faceoff",s.faceoff);put(side+"Leader",s.leader||"Leading scorer: unavailable")}
+}
+async function loadDetail(g){
+ try{
+  const d=await api(`/gamecenter/${g.id}/landing`);
+  if(games[idx]?.id!==g.id)return;
+  const blocks=d.scoring||d.summary?.scoring||[];
+  let goals=[];
+  for(const p of blocks){for(const x of (p.goals||[])){
+   const name=x.name?.default||x.scorerName||"Goal";
+   const assists=(x.assists||[]).map(a=>a.name?.default||a.name||"").filter(Boolean);
+   goals.push({name,teamAbbrev:x.teamAbbrev||"",timeInPeriod:x.timeInPeriod||"",periodDescriptor:p.periodDescriptor||{},assists});
+  }}
+  if(goals.length){el("goalList").innerHTML="";goals.slice(-4).reverse().forEach(x=>{
+   const span=document.createElement("span");span.className="goal";const b=document.createElement("b");b.textContent=(x.teamAbbrev?x.teamAbbrev+" · ":"")+x.name;
+   const small=document.createElement("small");small.textContent=` ${x.timeInPeriod}${x.periodDescriptor?.number?" · P"+x.periodDescriptor.number:""}${x.assists?.length?" · "+x.assists.join(", "):""}`;span.append(b,small);el("goalList").appendChild(span);
+  })}
+  const a=d.awayTeam||{},h=d.homeTeam||{};
+  if(a.sog!=null)put("awayShots",a.sog);if(h.sog!=null)put("homeShots",h.sog);
+  renderBoxscore(d);
+  const pp=getPowerPlay(g,d);const key=String(g.id);const sig=pp?`${pp.team}|${pp.situation}`:"inactive";const prior=ppSnapshot[key];if(pp&&pp.active&&prior!==sig&&prior!==undefined){ppAlertUntil=Date.now()+PP_ALERT_MS;el("ppAlert").classList.add("show")}if(pp&&pp.active&&prior===undefined&&g.status==="LIVE"){/* establish baseline on first detail fetch without a spurious alert */}ppSnapshot[key]=sig;ppActiveByGame[key]=!!pp;renderPowerPlay(g,d);
+ }catch(e){console.warn("Game detail unavailable",e)}
+}
+function showScoreAlert(gameId){
+ const found=games.findIndex(g=>String(g.id)===String(gameId));
+ if(found>=0)idx=found;
+ alertUntil=Date.now()+ALERT_MS;
+ el("scoreAlert").classList.add("show");
+ activeId=null;
+}
+function updateAlert(){
+ if(Date.now()>=alertUntil)el("scoreAlert").classList.remove("show");
+ if(Date.now()>=ppAlertUntil)el("ppAlert").classList.remove("show");
+}
+async function refresh(){
+ if(fetching)return;fetching=true;
+ try{
+  let data;
+  try{data=await api("/score/now")}catch(e){data=await api("/scoreboard/now")}
+  let raw=data.games||[];
+  if(!raw.length){try{const other=await api("/scoreboard/now");raw=other.games||[]}catch(e){}}
+  const old=games[idx]?.id;
+  const incoming=raw.map(normalize);
+  for(const g of incoming){const pp=getPowerPlay(g);const key=String(g.id);const sig=pp?`${pp.team}|${pp.situation}`:"inactive";if(pp&&pp.active&&ppSnapshot[key]!==undefined&&ppSnapshot[key]!==sig){ppAlertUntil=Date.now()+PP_ALERT_MS;el("ppAlert").classList.add("show")}if(ppSnapshot[key]===undefined)ppSnapshot[key]=sig;else if(!pp)ppSnapshot[key]="inactive";ppActiveByGame[key]=!!pp;}
+  let changedGameId=null;
+  if(scoreSnapshot){
+   for(const g of incoming){
+    const previous=scoreSnapshot[String(g.id)];
+    if(previous && (Number(g.away.score)!==previous.away || Number(g.home.score)!==previous.home)){
+     changedGameId=g.id;
+    }
+   }
+  }
+  scoreSnapshot=Object.fromEntries(incoming.map(g=>[String(g.id),{away:Number(g.away.score),home:Number(g.home.score)}]));
+  games=incoming;
+  const order={LIVE:0,UPCOMING:1,FINAL:2};games.sort((a,b)=>(order[a.status]??3)-(order[b.status]??3)||(a.start||"").localeCompare(b.start||""));
+  if(changedGameId!==null){showScoreAlert(changedGameId)}
+  else if(old && Date.now()>=alertUntil){const n=games.findIndex(g=>g.id===old);idx=n>=0?n:0}
+  else if(!old)idx=0;
+  render();updateAlert();put("updated","Updated "+new Date().toLocaleTimeString());
+ }catch(e){el("connection").textContent="● RETRYING CONNECTION";put("updated","NHL data temporarily unavailable");console.error(e)}
+ finally{fetching=false}
+}
+function rotate(){updateAlert();if(Date.now()<alertUntil)return;if(games.length>1){idx=(idx+1)%games.length;activeId=null;render()}}
+document.addEventListener("keydown",e=>{if(["ArrowRight"," "].includes(e.key)){e.preventDefault();rotate()}else if(e.key==="ArrowLeft"){e.preventDefault();idx=(idx-1+games.length)%Math.max(1,games.length);activeId=null;render()}else if(e.key.toLowerCase()==="r")refresh()});
+refresh();setInterval(refresh,POLL);setInterval(rotate,ROTATE);
+</script>
+</body></html>
