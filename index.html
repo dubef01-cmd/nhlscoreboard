@@ -18,7 +18,7 @@ main::before{left:0;background-image:var(--away-bg,none);background-position:40%
 main::after{right:0;background-image:var(--home-bg,none);background-position:60% center}
 main>*{position:relative;z-index:1}
 #headline{text-align:center;color:var(--muted);font-size:clamp(12px,1.3vw,18px);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1vh}
-#match{display:grid;grid-template-columns:minmax(115px,.72fr) minmax(0,1fr) auto minmax(0,1fr) minmax(115px,.72fr);align-items:center;gap:1.1vw;min-height:44vh}
+#match{display:grid;grid-template-columns:minmax(115px,.72fr) minmax(0,1fr) auto minmax(0,1fr) minmax(115px,.72fr);align-items:center;gap:1.1vw;min-height:36vh}
 .team{display:flex;flex-direction:column;align-items:center;min-width:0}
 .logo{width:min(13vw,18vh);height:min(13vw,18vh);object-fit:contain;filter:drop-shadow(0 8px 15px #0008)}
 .edgeStats{display:flex;flex-direction:column;justify-content:center;gap:1.1vh;min-width:0;padding:.8vh .7vw;background:#0b1421c9;border:1px solid #26374c;border-radius:10px;align-self:center}
@@ -29,6 +29,23 @@ main>*{position:relative;z-index:1}
 .edgeRow span{color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .edgeRow b{font-size:clamp(13px,1.3vw,18px);font-weight:900}
 .edgeLeader{font-size:clamp(9px,.9vw,13px);line-height:1.25;color:#e6edf7;white-space:normal;margin-top:.2vh}
+ #penaltyClocks{display:grid;grid-template-columns:minmax(115px,.72fr) minmax(0,1fr) auto minmax(0,1fr) minmax(115px,.72fr);gap:1.1vw;margin:-.2vh 0 .7vh;align-items:stretch;min-height:5.4vh}
+.penaltyClock{grid-row:1;min-width:0;background:#171522;border:1px solid #4b3850;border-radius:9px;padding:.55vh .7vw;overflow:hidden;align-self:stretch}
+.awayClock{grid-column:1;border-left:3px solid #ffb454;text-align:left}.homeClock{grid-column:5;border-right:3px solid #ffb454;text-align:right}
+.penaltyClockTitle{font-size:clamp(8px,.72vw,11px);font-weight:900;letter-spacing:.08em;color:#ffbd6e;margin-bottom:.25vh}
+.penaltyTimes{font-size:clamp(10px,1vw,14px);font-weight:900;line-height:1.25;overflow:hidden;white-space:normal}
+.penaltyTimes .activePenalty{display:flex;justify-content:space-between;gap:.4vw;align-items:baseline}
+.penaltyTimes .activePenalty span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e5e8ef}
+.penaltyTimes .activePenalty b{white-space:nowrap;color:#ffcf8c;font-size:clamp(12px,1.2vw,16px)}
+.homeClock .activePenalty{flex-direction:row-reverse}
+#activity{height:11vh;min-height:64px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1vw;overflow:hidden;align-items:stretch}
+#activity .activityPanel:first-child{grid-column:1}
+#activity .activityPanel:last-child{grid-column:2}
+.activityPanel{height:100%}
+.activityPanel{min-width:0;background:#0c1522;border:1px solid var(--line);border-radius:12px;padding:.8vh 1.2vw;display:flex;flex-direction:column;overflow:hidden}
+.activityTitle{font-size:clamp(10px,1vw,14px);color:var(--blue);font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.5vh}
+#goalList,#penaltyList{display:flex;flex-direction:column;gap:.3vh;font-size:clamp(10px,1.05vw,15px);line-height:1.18;overflow:hidden}
+.penaltyItem{display:flex;gap:.6vw;align-items:baseline;min-width:0}.penaltyItem b{color:#fff}.penaltyItem small{color:var(--muted)}
 .edgeStats.home .edgeRow{flex-direction:row-reverse}
 .edgeStats.home .edgeTitle{text-align:right}
 .abbr{font-size:clamp(22px,3vw,44px);font-weight:900;letter-spacing:.07em;margin-top:1vh}
@@ -38,9 +55,9 @@ main>*{position:relative;z-index:1}
 #period{font-size:clamp(12px,1.35vw,20px);font-weight:900;letter-spacing:.13em;color:var(--blue);text-align:center}
 #clock{font-size:clamp(22px,3vw,43px);font-weight:900;white-space:nowrap}
 #status{font-size:clamp(10px,1vw,14px);color:var(--muted);letter-spacing:.1em}
-.stats{display:flex;justify-content:center;gap:clamp(28px,8vw,120px);margin:1vh 0 2vh}
+.stats{display:flex;justify-content:center;gap:clamp(28px,8vw,120px);margin:.4vh 0 .8vh}
 .stat{text-align:center}.label{font-size:clamp(10px,1vw,14px);color:var(--muted);letter-spacing:.13em;text-transform:uppercase}.value{font-size:clamp(25px,3vw,42px);font-weight:900;margin-top:.4vh}
-#powerPlay{display:none;height:10vh;min-height:62px;background:#12231d;border:2px solid #50e2a0;border-radius:12px;padding:.8vh 1.6vw;margin-bottom:1vh;align-items:center;justify-content:space-between;gap:1.5vw}
+#powerPlay{display:none;height:8vh;min-height:54px;background:#12231d;border:2px solid #50e2a0;border-radius:12px;padding:.8vh 1.6vw;margin-bottom:1vh;align-items:center;justify-content:space-between;gap:1.5vw}
 #powerPlay.active{display:flex}
 #ppTitle{font-size:clamp(13px,1.7vw,24px);font-weight:1000;color:#50e2a0;letter-spacing:.1em}
 #ppClock{font-size:clamp(22px,3vw,42px);font-weight:1000;white-space:nowrap}
@@ -51,9 +68,6 @@ main>*{position:relative;z-index:1}
 @keyframes ppBannerFlash{0%,100%{opacity:1}50%{opacity:.2}}
 #powerPlay.flash{animation:ppFlash .7s steps(2,end) infinite}
 @keyframes ppFlash{50%{opacity:.25}}
-#goals{height:11vh;min-height:58px;background:#0c1522;border:1px solid var(--line);border-radius:12px;padding:1vh 2vw;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-#goalsTitle{font-size:clamp(10px,1vw,14px);color:var(--blue);font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.7vh}
-#goalList{display:flex;flex-wrap:wrap;gap:.5vh 1.5vw;font-size:clamp(11px,1.2vw,17px);line-height:1.3}
 .goal{white-space:normal}.goal b{color:#fff}.goal small{color:var(--muted)}
 footer{height:7vh;min-height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 4vw;color:var(--muted);font-size:clamp(10px,1vw,14px)}
 #dots{display:flex;gap:5px;align-items:center}.dot{width:6px;height:6px;border-radius:50%;background:#40516a}.dot.on{width:17px;border-radius:4px;background:var(--blue)}
@@ -61,25 +75,37 @@ footer{height:7vh;min-height:38px;display:flex;align-items:center;justify-conten
 #scoreAlert{display:none;position:fixed;z-index:10;top:9vh;left:50%;transform:translateX(-50%);padding:1.2vh 3vw;background:#e51b32;color:#fff;border:3px solid #fff;border-radius:12px;font-size:clamp(24px,4vw,58px);font-weight:1000;letter-spacing:.12em;white-space:nowrap;box-shadow:0 0 35px #ff173b99;text-shadow:0 2px 4px #600}
 #scoreAlert.show{display:block;animation:scoreFlash .65s steps(2,end) infinite}
 @keyframes scoreFlash{0%,100%{opacity:1;transform:translateX(-50%) scale(1)}50%{opacity:.25;transform:translateX(-50%) scale(.97)} }
-@media(max-aspect-ratio:1/1){#match{grid-template-columns:minmax(76px,.65fr) minmax(0,1fr) auto minmax(0,1fr) minmax(76px,.65fr);gap:.5vw}.logo{width:10vw;height:10vw}.score{font-size:10vw}.edgeStats{padding:.5vh .4vw;gap:.8vh}.edgeRow{font-size:9px}.edgeRow b{font-size:12px}.edgeLeader{font-size:9px}}
+#highlightOverlay{display:none;position:fixed;inset:0;z-index:30;background:#02050a;align-items:center;justify-content:center;flex-direction:column;padding:2vh 2vw}#highlightOverlay.show{display:flex}#highlightTop{width:100%;display:flex;align-items:center;justify-content:space-between;gap:2vw;margin-bottom:1vh;color:#fff;font-weight:900;letter-spacing:.08em;text-transform:uppercase}#highlightTitle{font-size:clamp(14px,2vw,28px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#highlightBadge{color:#ff4545;font-size:clamp(11px,1.1vw,16px);white-space:nowrap}#highlightFrame{width:min(94vw,150vh);height:min(78vh,52.875vw);border:1px solid #26374c;background:#000;border-radius:8px}#highlightFallback{display:none;color:#d9e5f5;font-size:clamp(12px,1.2vw,18px);margin-top:1vh;text-align:center}#highlightFallback a{color:#69cfff}#highlightNote{color:#9eacbf;font-size:clamp(10px,.9vw,14px);margin-top:1vh}
+@media(max-aspect-ratio:1/1){#activity{gap:.5vw;height:13vh}.activityPanel{padding:.6vh .8vw}.activityTitle{font-size:9px}#goalList,#penaltyList{font-size:9px}#penaltyClocks{grid-template-columns:minmax(76px,.65fr) minmax(0,1fr) auto minmax(0,1fr) minmax(76px,.65fr);gap:.5vw}.penaltyClock{padding:.5vh .4vw}.penaltyClockTitle{font-size:8px}.penaltyTimes{font-size:9px}#match{grid-template-columns:minmax(76px,.65fr) minmax(0,1fr) auto minmax(0,1fr) minmax(76px,.65fr);gap:.5vw}.logo{width:10vw;height:10vw}.score{font-size:10vw}.edgeStats{padding:.5vh .4vw;gap:.8vh}.edgeRow{font-size:9px}.edgeRow b{font-size:12px}.edgeLeader{font-size:9px}}
 </style>
 </head>
 <body>
 <header><div class="brand"><span>ICE</span> / NHL SCOREBOARD</div><div id="connection">● CONNECTING</div></header>
 <div id="scoreAlert" role="status" aria-live="assertive">⚡ SCORE UPDATE ⚡</div>
 <div id="ppAlert" role="status" aria-live="assertive">⚡ POWER PLAY ⚡</div>
+<section id="highlightOverlay" aria-live="polite" aria-label="NHL goal highlight playback">
+ <div id="highlightTop"><div id="highlightTitle">NHL GOAL HIGHLIGHT</div><div id="highlightBadge">▶ GOAL REPLAY</div></div>
+ <iframe id="highlightFrame" title="Official NHL goal highlight" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+ <div id="highlightFallback">Video could not play inline. <a id="highlightLink" href="https://www.nhl.com/video/" target="_blank" rel="noopener">Open official NHL highlight</a></div>
+ <div id="highlightNote">Live scoreboard resumes after the highlight window.</div>
+</section>
 <main>
 <div id="headline">Loading NHL games…</div>
 <section id="match">
- <aside id="awayBoxscore" class="edgeStats away"><div class="edgeTitle">Away stats</div><div class="edgeRow"><span>Shots</span><b id="awayEdgeShots">—</b></div><div class="edgeRow"><span>Hits</span><b id="awayHits">—</b></div><div class="edgeRow"><span>Blocks</span><b id="awayBlocks">—</b></div><div class="edgeRow"><span>Faceoff</span><b id="awayFaceoff">—</b></div><div id="awayLeader" class="edgeLeader">Leading scorer: —</div></aside>
+ <aside id="awayBoxscore" class="edgeStats away"><div class="edgeTitle">Away stats</div><div class="edgeRow"><span>Shots</span><b id="awayEdgeShots">—</b></div><div class="edgeRow"><span>Hits</span><b id="awayHits">—</b></div><div class="edgeRow"><span>Blocks</span><b id="awayBlocks">—</b></div><div class="edgeRow"><span>Faceoff</span><b id="awayFaceoff">—</b></div><div class="edgeRow"><span>Penalty min</span><b id="awayPIM">—</b></div><div id="awayLeader" class="edgeLeader">Leading scorer: —</div></aside>
  <div class="team"><img id="awayLogo" class="logo" alt=""><div id="awayAbbr" class="abbr">---</div><div id="awayName" class="name">Away</div><div id="awayScore" class="score">–</div></div>
  <div class="center"><div id="period">LIVE NHL</div><div id="clock">--:--</div><div id="status">UPDATING SCORES</div></div>
  <div class="team"><img id="homeLogo" class="logo" alt=""><div id="homeAbbr" class="abbr">---</div><div id="homeName" class="name">Home</div><div id="homeScore" class="score">–</div></div>
- <aside id="homeBoxscore" class="edgeStats home"><div class="edgeTitle">Home stats</div><div class="edgeRow"><span>Shots</span><b id="homeEdgeShots">—</b></div><div class="edgeRow"><span>Hits</span><b id="homeHits">—</b></div><div class="edgeRow"><span>Blocks</span><b id="homeBlocks">—</b></div><div class="edgeRow"><span>Faceoff</span><b id="homeFaceoff">—</b></div><div id="homeLeader" class="edgeLeader">Leading scorer: —</div></aside>
+ <aside id="homeBoxscore" class="edgeStats home"><div class="edgeTitle">Home stats</div><div class="edgeRow"><span>Shots</span><b id="homeEdgeShots">—</b></div><div class="edgeRow"><span>Hits</span><b id="homeHits">—</b></div><div class="edgeRow"><span>Blocks</span><b id="homeBlocks">—</b></div><div class="edgeRow"><span>Faceoff</span><b id="homeFaceoff">—</b></div><div class="edgeRow"><span>Penalty min</span><b id="homePIM">—</b></div><div id="homeLeader" class="edgeLeader">Leading scorer: —</div></aside>
 </section>
+<section id="penaltyClocks" aria-label="Team penalty countdown clocks">
+ <div class="penaltyClock awayClock"><div class="penaltyClockTitle">AWAY PENALTY CLOCK</div><div id="awayPenaltyTimes" class="penaltyTimes">No active penalties</div></div>
+ <div class="penaltyClock homeClock"><div class="penaltyClockTitle">HOME PENALTY CLOCK</div><div id="homePenaltyTimes" class="penaltyTimes">No active penalties</div></div>
+</section>
+
 <section class="stats"><div class="stat"><div class="label">Away shots</div><div id="awayShots" class="value">—</div></div><div class="stat"><div class="label">Home shots</div><div id="homeShots" class="value">—</div></div></section>
 <section id="powerPlay" aria-live="assertive"><div><div id="ppTitle">POWER PLAY</div><div id="ppTeam">—</div><div id="ppSituation">SITUATION —</div></div><div id="ppClock">2:00</div><div id="ppDetails">Penalty information loading…</div></section>
-<section id="goals"><div id="goalsTitle">Recent goals</div><div id="goalList">Waiting for live data…</div></section>
+<section id="activity"><div class="activityPanel"><div class="activityTitle">Recent goals</div><div id="goalList">Waiting for live data…</div></div><div class="activityPanel"><div class="activityTitle">Recent penalties</div><div id="penaltyList">Waiting for live data…</div></div></section>
 <div id="empty">No NHL games in the current feed.<br><span style="font-size:.55em">This screen will keep checking.</span></div>
 </main>
 <footer><div id="gameCount">GAME 0 / 0</div><div id="dots"></div><div id="updated">Waiting for connection…</div></footer>
@@ -92,6 +118,8 @@ const POLL=15000, ROTATE=18000;
 let games=[],idx=0,activeId=null,fetching=false;
 let scoreSnapshot=null,alertUntil=0,ppSnapshot={},ppAlertUntil=0,ppActiveByGame={};
 const ALERT_MS=10000, PP_ALERT_MS=9000;
+const HIGHLIGHT_WINDOW_MS=22000, HIGHLIGHT_POLL_MS=30000;
+let highlightQueue=[],highlightSeen={},highlightPlaying=false,highlightStartedAt=0,highlightTimer=null,highlightFallbackTimer=null;
 const el=id=>document.getElementById(id);
 function put(id,v){el(id).textContent=(v===null||v===undefined||v==="")?"—":String(v)}
 async function api(path){
@@ -134,8 +162,8 @@ function renderDots(){
  games.slice(0,40).forEach((g,i)=>{let d=document.createElement("span");d.className="dot"+(i===idx?" on":"");el("dots").appendChild(d)});
 }
 function render(){
- if(!games.length){el("match").style.display="none";document.querySelector(".stats").style.display="none";el("goals").style.display="none";el("powerPlay").classList.remove("active","flash");el("empty").style.display="block";put("headline","NHL LIVE SCOREBOARD");put("gameCount","NO GAMES");renderDots();return}
- el("match").style.display="grid";document.querySelector(".stats").style.display="flex";el("goals").style.display="flex";el("empty").style.display="none";
+ if(!games.length){el("match").style.display="none";document.querySelector(".stats").style.display="none";el("activity").style.display="none";el("penaltyClocks").style.display="none";el("powerPlay").classList.remove("active","flash");el("empty").style.display="block";put("headline","NHL LIVE SCOREBOARD");put("gameCount","NO GAMES");renderDots();return}
+ el("match").style.display="grid";document.querySelector(".stats").style.display="flex";el("activity").style.display="grid";el("penaltyClocks").style.display="grid";el("empty").style.display="none";
  idx=(idx+games.length)%games.length;const g=games[idx];
  document.querySelector("main").style.setProperty("--away-bg",`url("${g.away.logo}")`);document.querySelector("main").style.setProperty("--home-bg",`url("${g.home.logo}")`);
  put("headline",`${g.away.full} at ${g.home.full}  •  ${timeLabel(g)}`);
@@ -147,8 +175,8 @@ function render(){
 }
 function firstText(...values){for(const v of values){if(v===null||v===undefined)continue;if(typeof v==="string"&&v.trim())return v;if(typeof v==="number")return String(v);if(typeof v==="object"){const t=v.default||v.fullName||v.name;if(typeof t==="string"&&t.trim())return t}}return ""}
 function penaltyRows(d){
- const root=d?.summary?.penalties||d?.penalties||[];let out=[];
- const add=(x,period)=>{if(!x||typeof x!=="object")return;const player=firstText(x.committedByPlayer,x.playerName,x.descKey,x.name);const minutes=x.duration??x.penaltyMinutes??x.minutes??x.durationMinutes;const team=firstText(x.teamAbbrev,x.team?.abbrev,x.teamName,x.team);const desc=firstText(x.descKey,x.type,x.penaltyType,x.description);const tm=firstText(x.timeInPeriod,x.time);if(player||desc||minutes)out.push({player,minutes,team,desc,tm,period:period||x.periodDescriptor?.number||x.period||""})};
+ const root=d?._pbpPenalties||d?.summary?.penalties||d?.penalties||[];let out=[];
+ const add=(x,period)=>{if(!x||typeof x!=="object")return;const player=firstText(x.player,x.committedByPlayer,x.playerName,x.descKey,x.name);const minutes=x.duration??x.penaltyMinutes??x.minutes??x.durationMinutes;const team=firstText(x.teamAbbrev,x.team?.abbrev,x.teamName,x.team);const desc=firstText(x.desc,x.descKey,x.type,x.penaltyType,x.description);const tm=firstText(x.tm,x.timeInPeriod,x.time);if(player||desc||minutes)out.push({player,minutes,team,desc,tm,period:period||x.periodDescriptor?.number||x.period||""})};
  if(Array.isArray(root)){root.forEach(block=>{if(Array.isArray(block?.penalties))block.penalties.forEach(x=>add(x,block.periodDescriptor?.number||block.period));else add(block,block.periodDescriptor?.number||block.period)})}
  else if(root&&typeof root==="object"){Object.values(root).forEach(v=>{if(Array.isArray(v))v.forEach(x=>add(x));else if(v&&Array.isArray(v.penalties))v.penalties.forEach(x=>add(x,v.period))})}
  return out;
@@ -214,28 +242,208 @@ function renderGoals(g){
   span.append(b,small);el("goalList").appendChild(span);
  });
 }
+function renderPenalties(penalties,g){
+ const root=el("penaltyList");root.innerHTML="";
+ const recent=(penalties||[]).slice(-5).reverse();
+ if(!recent.length){put("penaltyList",g.status==="UPCOMING"?"No penalties yet — game has not started.":"No penalty events listed yet.");return}
+ recent.forEach(p=>{const row=document.createElement("div");row.className="penaltyItem";const b=document.createElement("b");b.textContent=[p.team,p.player||"Penalty"].filter(Boolean).join(" · ");const small=document.createElement("small");small.textContent=[p.desc,p.minutes!=null&&p.minutes!==""?`${p.minutes} min`:"",p.tm,p.period?`P${p.period}`:""].filter(Boolean).join(" · ");row.append(b,small);root.appendChild(row)});
+}
 function statNumber(obj,...keys){for(const key of keys){const v=obj?.[key];if(v!==undefined&&v!==null&&v!=="")return v}return null}
 function formatStat(v,suffix=""){if(v===undefined||v===null||v==="")return "—";return `${v}${suffix}`}
 function teamStatsFromLanding(d,side){
  const ab=side==="away"?d.awayTeam:d.homeTeam;
- const out={shots:statNumber(ab,"sog","shotsOnGoal","shots"),hits:null,blocks:null,faceoff:null,leader:null};
+ const out={shots:statNumber(ab,"sog","shotsOnGoal","shots"),hits:null,blocks:null,faceoff:null,pim:null,leader:null};
  const groups=d.teamGameStats||d.summary?.teamGameStats||[];
  const arr=Array.isArray(groups)?groups:(Array.isArray(groups?.[side])?groups[side]:[]);
- const keys={hits:["hits","hit"],blocks:["blockedShots","blocks","blocked-shots"],faceoff:["faceoffWinningPctg","faceoffWinPctg","faceoffPercentage","faceoff-win-pctg"],shots:["sog","shotsOnGoal","shots-on-goal"]};
+ const keys={hits:["hits","hit"],blocks:["blockedShots","blocks","blocked-shots"],faceoff:["faceoffWinningPctg","faceoffWinPctg","faceoffPercentage","faceoff-win-pctg"],shots:["sog","shotsOnGoal","shots-on-goal"],pim:["penaltyMinutes","pim","penalty-minutes"]};
  for(const row of arr){const cat=String(row.category||row.stat||row.name||row.key||"").toLowerCase();const val=side==="away"?(row.awayValue??row.away??row.valueAway):(row.homeValue??row.home??row.valueHome);for(const [k,variants] of Object.entries(keys)){if(variants.some(x=>cat.includes(x.toLowerCase()))&&val!=null)out[k]=val}}
- if(out.faceoff!=null){const n=Number(out.faceoff);out.faceoff=Number.isFinite(n)?`${Math.round(n>1?n:n*100)}%`:out.faceoff}
+ for(const k of ["faceoff"]){if(out[k]!=null){const n=Number(out[k]);out[k]=Number.isFinite(n)?`${Math.round(n>1?n:n*100)}%`:out[k]}}
  const pbg=d.playerByGameStats||d.boxscore?.playerByGameStats||{};const teamGroup=pbg[side+"Team"]||pbg[side]||{};
  const players=[...(teamGroup.forwards||[]),...(teamGroup.defense||[]),...(teamGroup.defencemen||[])];
  if(players.length){players.sort((a,b)=>((Number(b.goals)||0)+(Number(b.assists)||0))-((Number(a.goals)||0)+(Number(a.assists)||0))||((Number(b.shots)||0)-(Number(a.shots)||0)));const p=players[0];const name=firstText(p.name,p.firstName,p.lastName,p.playerName);const g=Number(p.goals)||0,a=Number(p.assists)||0;if(name)out.leader=`Leader: ${name} · ${g}G ${a}A`}
  return out;
 }
-function renderBoxscore(d){
- for(const side of ["away","home"]){const s=teamStatsFromLanding(d,side);put(side+"EdgeShots",s.shots);put(side+"Shots",s.shots);put(side+"Hits",s.hits);put(side+"Blocks",s.blocks);put(side+"Faceoff",s.faceoff);put(side+"Leader",s.leader||"Leading scorer: unavailable")}
+function teamSideForId(id,pbp,g){
+ if(id==null)return null;
+ const awayId=pbp?.awayTeam?.id??g?.raw?.awayTeam?.id,homeId=pbp?.homeTeam?.id??g?.raw?.homeTeam?.id;
+ if(awayId!=null&&String(id)===String(awayId))return "away";
+ if(homeId!=null&&String(id)===String(homeId))return "home";
+ return null;
+}
+function derivePbpStats(pbp,g){
+ const plays=Array.isArray(pbp?.plays)?pbp.plays:[];
+ if(!plays.length)return null;
+ const roster=new Map();
+ for(const p of (pbp.rosterSpots||[])){const id=p.playerId??p.id;if(id!=null)roster.set(String(id),p)}
+ const stats={away:{shots:0,hits:0,blocks:0,faceoffWins:0,faceoffTotal:0,goals:0,assists:0,pim:0,ppGoals:0,ppChances:0,scorers:{}},home:{shots:0,hits:0,blocks:0,faceoffWins:0,faceoffTotal:0,goals:0,assists:0,pim:0,ppGoals:0,ppChances:0,scorers:{}}};
+ const penalties=[];
+ for(const play of plays){
+  const type=String(play.typeDescKey||play.typeDesc||play.eventTypeDescKey||"").toLowerCase();
+  const d=play.details||{};
+  const owner=teamSideForId(d.eventOwnerTeamId??play.eventOwnerTeamId,g?pbp:g,g);
+  if(type==="shot-on-goal"||type==="goal")if(owner)stats[owner].shots++;
+  if(type==="hit"&&owner)stats[owner].hits++;
+  if(type==="blocked-shot"){
+   const blocker=d.blockingPlayerId!=null?roster.get(String(d.blockingPlayerId)):null;
+   const blockerSide=teamSideForId(blocker?.teamId??blocker?.teamID,pbp,g);
+   const side=blockerSide||(owner==="away"?"home":owner==="home"?"away":null);
+   if(side)stats[side].blocks++;
+  }
+  if(type==="faceoff"){
+   let winnerSide=null;const winner=d.winningPlayerId??d.winnerPlayerId;
+   if(winner!=null){const rp=roster.get(String(winner));winnerSide=teamSideForId(rp?.teamId??rp?.teamID,pbp,g)}
+   if(!winnerSide)winnerSide=owner;
+   if(winnerSide)stats[winnerSide].faceoffWins++;
+   if(winnerSide)stats[winnerSide==="away"?"home":"away"].faceoffTotal++;
+   if(winnerSide)stats[winnerSide].faceoffTotal++;
+  }
+  if(type==="goal"&&owner){
+   const code=String(play.situationCode||pbp.situationCode||"");if(/^\d{4}$/.test(code)){const hs=Number(code[1]),as=Number(code[2]);if(owner==="home"&&hs>as)stats.home.ppGoals++;if(owner==="away"&&as>hs)stats.away.ppGoals++;}
+   const id=d.scoringPlayerId??d.shootingPlayerId??d.playerId;
+   const rp=id!=null?roster.get(String(id)):null;
+   const name=rp?`${firstText(rp.firstName)} ${firstText(rp.lastName)}`.trim():firstText(d.name,d.scoringPlayerName);
+   if(name){const sc=stats[owner].scorers[name]||(stats[owner].scorers[name]={goals:0,assists:0});sc.goals++}
+   for(const a of (d.assists||[])){const aid=a.playerId??a.id;const ar=aid!=null?roster.get(String(aid)):null;const an=ar?`${firstText(ar.firstName)} ${firstText(ar.lastName)}`.trim():firstText(a.name);if(an){const sc=stats[owner].scorers[an]||(stats[owner].scorers[an]={goals:0,assists:0});sc.assists++}}
+  }
+  if(type==="penalty"){
+   const rp=d.committedByPlayerId!=null?roster.get(String(d.committedByPlayerId)):null;
+   const team=teamSideForId(d.eventOwnerTeamId,pbp,g);
+   const mins=Number(d.duration??d.penaltyMinutes??d.penaltyDuration??d.minutes)||0;if(team)stats[team].pim+=mins;const code=String(play.situationCode||"");if(/^\d{4}$/.test(code)){const hs=Number(code[1]),as=Number(code[2]);if(team==="away"&&hs>as)stats.home.ppChances++;if(team==="home"&&as>hs)stats.away.ppChances++;}penalties.push({player:firstText(rp?.firstName,rp?.lastName,d.committedByPlayerName),minutes:mins||Number(d.duration??d.penaltyMinutes??d.penaltyDuration)||0,team:team==="away"?g.away.abbrev:team==="home"?g.home.abbrev:"",side:team,desc:firstText(d.descKey,d.penaltyTypeDescKey,d.type),tm:play.timeInPeriod||"",period:play.periodDescriptor?.number||play.period||""});
+  }
+ }
+ for(const side of ["away","home"]){
+  const t=stats[side];t.faceoff=t.faceoffTotal?`${Math.round(t.faceoffWins/t.faceoffTotal*100)}%`:null;
+  const leaders=Object.entries(t.scorers).sort((a,b)=>(b[1].goals+b[1].assists)-(a[1].goals+a[1].assists)||b[1].goals-a[1].goals);
+  t.leader=leaders.length?`Leader: ${leaders[0][0]} · ${leaders[0][1].goals}G ${leaders[0][1].assists}A`:null;
+ }
+ const last=plays[plays.length-1]||{};
+ return {stats,penalties,situationCode:last.situationCode||pbp.situationCode||"",limitedScoring:!!pbp.limitedScoring};
+}
+function renderBoxscore(d,pbpStats=null){
+ for(const side of ["away","home"]){
+  const fallback=teamStatsFromLanding(d,side),p=pbpStats?.stats?.[side];
+  const s=p?{shots:p.shots,hits:p.hits,blocks:p.blocks,faceoff:p.faceoff,leader:p.leader,pim:p.pim??fallback.pim}:fallback;
+  const pim=s.pim!=null?s.pim:(pbpStats?.penalties||[]).filter(x=>x.side===side).reduce((n,x)=>n+(Number(x.minutes)||0),0);
+  put(side+"EdgeShots",s.shots);put(side+"Shots",s.shots);put(side+"Hits",s.hits);put(side+"Blocks",s.blocks);put(side+"Faceoff",s.faceoff);put(side+"PIM",pim);put(side+"Leader",s.leader||"Leading scorer: unavailable");
+ }
+}
+function clockSeconds(value){
+ if(value===null||value===undefined||value==="")return null;
+ const m=String(value).trim().match(/^(\d+):(\d{2})$/);if(!m)return null;return Number(m[1])*60+Number(m[2]);
+}
+let penaltyClockState={g:null,penalties:[],capturedAt:0};
+function renderPenaltyClocks(){
+ const g=penaltyClockState.g,penalties=penaltyClockState.penalties||[];
+ for(const side of ["away","home"]){
+  const target=el(side+"PenaltyTimes");target.innerHTML="";
+  if(!g||g.status!=="LIVE"||g.clock==="INTERMISSION") {target.textContent="No active penalties";continue}
+  const baseRemaining=clockSeconds(g.clock);if(baseRemaining===null){target.textContent="Penalty timing unavailable";continue}
+  const currentRemaining=Math.max(0,baseRemaining-Math.floor((Date.now()-penaltyClockState.capturedAt)/1000));
+  const currentPeriod=Number(g.period||0),currentElapsed=Math.max(0,1200-currentRemaining);
+  const active=[];
+  for(const p of penalties){
+   if(p.side!==side)continue;
+   const duration=Number(p.minutes)||0, eventPeriod=Number(p.period||0),eventElapsed=clockSeconds(p.tm);
+   if(duration<=0||eventPeriod<=0||eventElapsed===null||currentPeriod<eventPeriod)continue;
+   let elapsed=0;
+   if(currentPeriod===eventPeriod)elapsed=currentElapsed-eventElapsed;
+   else elapsed=(1200-eventElapsed)+Math.max(0,currentPeriod-eventPeriod-1)*1200+currentElapsed;
+   const left=Math.ceil(duration*60-elapsed);
+   if(left>0)active.push({...p,left});
+  }
+  active.sort((a,b)=>a.left-b.left);
+  if(!active.length){target.textContent="No active penalties";continue}
+  active.slice(0,3).forEach(p=>{
+   const row=document.createElement("div");row.className="activePenalty";
+   const name=document.createElement("span");name.textContent=[p.player||"Penalty",p.minutes?`${p.minutes} min`:""].filter(Boolean).join(" · ");name.title=name.textContent;
+   const time=document.createElement("b");time.textContent=`${Math.floor(p.left/60)}:${String(p.left%60).padStart(2,"0")}`;
+   row.append(name,time);target.appendChild(row);
+  });
+ }
+}
+function clipUrlFromPlay(play){
+ const d=play?.details||{};
+ const candidates=[d.highlightClipSharingUrl,d.highlightClipSharingUrlFr,d.pptReplayUrl,d.highlightClipUrl,d.videoUrl];
+ return candidates.find(v=>typeof v==='string'&&/^https:\/\/(www\.)?nhl\.com\//i.test(v))||'';
+}
+function queueHighlight(clip){
+ if(!clip?.url||highlightQueue.some(x=>x.key===clip.key))return;
+ highlightSeen[clip.key]=true;
+ highlightQueue.push(clip);
+ if(!highlightPlaying)playNextHighlight();
+}
+function playNextHighlight(){
+ if(highlightPlaying||!highlightQueue.length)return;
+ const clip=highlightQueue.shift();
+ if(!clip?.url)return;
+ highlightPlaying=true;highlightStartedAt=Date.now();
+ const overlay=el('highlightOverlay'),frame=el('highlightFrame'),fallback=el('highlightFallback'),link=el('highlightLink');
+ put('highlightTitle',clip.title||'NHL GOAL HIGHLIGHT');
+ link.href=clip.url;fallback.style.display='none';frame.style.display='block';
+ let target=clip.url;
+ try{const u=new URL(clip.url);u.searchParams.set('autoplay','true');u.searchParams.set('muted','true');u.searchParams.set('playsinline','true');target=u.toString()}catch(e){}
+ frame.src=target;overlay.classList.add('show');
+ clearTimeout(highlightTimer);clearTimeout(highlightFallbackTimer);
+ // Many official share pages do not allow third-party embedding. Show a direct official link if no playable frame appears.
+ highlightFallbackTimer=setTimeout(()=>{if(highlightPlaying){fallback.style.display='block';}},5000);
+ highlightTimer=setTimeout(endHighlight,HIGHLIGHT_WINDOW_MS);
+}
+function endHighlight(){
+ clearTimeout(highlightTimer);clearTimeout(highlightFallbackTimer);
+ el('highlightOverlay').classList.remove('show');el('highlightFrame').src='about:blank';
+ highlightPlaying=false;
+ if(highlightQueue.length)playNextHighlight();
+}
+async function pollLiveGoalHighlights(){
+ const live=games.filter(g=>g.status==='LIVE');
+ await Promise.allSettled(live.map(async g=>{
+  try{
+   const pbp=await api(`/gamecenter/${g.id}/play-by-play`);
+   const plays=Array.isArray(pbp.plays)?pbp.plays:[];
+   const goals=plays.filter(p=>String(p.typeDescKey||p.type||'').toLowerCase()==='goal'||String(p.typeDescKey||'').toLowerCase().includes('goal'));
+   const seenKey=String(g.id);
+   if(!highlightSeen['baseline:'+seenKey]){
+    // Establish a baseline on first read so loading the page does not replay every historical goal.
+    for(const p of goals){highlightSeen[`${g.id}:${p.eventId??p.id??p.sortOrder??''}`]=true;}
+    highlightSeen['baseline:'+seenKey]=true;
+    return;
+   }
+   for(const p of goals){
+    const eventId=p.eventId??p.id??p.sortOrder;
+    if(eventId==null)continue;
+    const key=`${g.id}:${eventId}`;
+    if(highlightSeen[key])continue;
+    const url=clipUrlFromPlay(p);
+    // Mark each new goal once; if NHL has not published a shareable clip, skip it gracefully.
+    highlightSeen[key]=true;
+    if(!url)continue;
+    const d=p.details||{};
+    const away=g.away?.abbrev||'',home=g.home?.abbrev||'';
+    const team=d.eventOwnerTeamId===g.raw?.awayTeam?.id?away:(d.eventOwnerTeamId===g.raw?.homeTeam?.id?home:(d.eventOwnerTeamId===g.raw?.homeTeam?.id?home:''));
+    const scorer=d.scoringPlayerName||d.scorerName||d.name||'Goal scored';
+    const time=p.timeInPeriod||'';
+    queueHighlight({key,url,title:`${team?team+' · ':''}${scorer}${time?' · '+time:''} — ${away} at ${home}`});
+   }
+  }catch(e){/* Missing PBP or clips should never interrupt the scoreboard. */}
+ }));
 }
 async function loadDetail(g){
  try{
-  const d=await api(`/gamecenter/${g.id}/landing`);
+  // Combine the NHL Web API's landing + boxscore endpoints with Gamecenter play-by-play.
+  // Landing/score feeds supply the live scoreboard and official summaries; PBP supplies event-level stats.
+  const [landingResult,boxscoreResult,pbpResult]=await Promise.allSettled([
+   api(`/gamecenter/${g.id}/landing`),
+   api(`/gamecenter/${g.id}/boxscore`),
+   api(`/gamecenter/${g.id}/play-by-play`)
+  ]);
+  const landing=landingResult.status==="fulfilled"?landingResult.value:{};
+  const boxscore=boxscoreResult.status==="fulfilled"?boxscoreResult.value:{};
+  // Keep landing values as primary metadata, while making boxscore fields available as fallbacks.
+  const d={...boxscore,...landing,boxscore:boxscore.boxscore||boxscore};
+  const pbp=pbpResult.status==="fulfilled"?pbpResult.value:null;
   if(games[idx]?.id!==g.id)return;
+  const pbpDerived=pbp?derivePbpStats(pbp,g):null;
+  if(pbpDerived){d._pbpPenalties=pbpDerived.penalties;if(pbpDerived.situationCode)d.situationCode=pbpDerived.situationCode;renderPenalties(pbpDerived.penalties,g)}else{renderPenalties(penaltyRows(d),g)}
   const blocks=d.scoring||d.summary?.scoring||[];
   let goals=[];
   for(const p of blocks){for(const x of (p.goals||[])){
@@ -249,7 +457,8 @@ async function loadDetail(g){
   })}
   const a=d.awayTeam||{},h=d.homeTeam||{};
   if(a.sog!=null)put("awayShots",a.sog);if(h.sog!=null)put("homeShots",h.sog);
-  renderBoxscore(d);
+  renderBoxscore(d,pbpDerived);
+  penaltyClockState={g,penalties:pbpDerived?.penalties||penaltyRows(d),capturedAt:Date.now()};renderPenaltyClocks();
   const pp=getPowerPlay(g,d);const key=String(g.id);const sig=pp?`${pp.team}|${pp.situation}`:"inactive";const prior=ppSnapshot[key];if(pp&&pp.active&&prior!==sig&&prior!==undefined){ppAlertUntil=Date.now()+PP_ALERT_MS;el("ppAlert").classList.add("show")}if(pp&&pp.active&&prior===undefined&&g.status==="LIVE"){/* establish baseline on first detail fetch without a spurious alert */}ppSnapshot[key]=sig;ppActiveByGame[key]=!!pp;renderPowerPlay(g,d);
  }catch(e){console.warn("Game detail unavailable",e)}
 }
@@ -293,8 +502,8 @@ async function refresh(){
  }catch(e){el("connection").textContent="● RETRYING CONNECTION";put("updated","NHL data temporarily unavailable");console.error(e)}
  finally{fetching=false}
 }
-function rotate(){updateAlert();if(Date.now()<alertUntil)return;if(games.length>1){idx=(idx+1)%games.length;activeId=null;render()}}
+function rotate(){updateAlert();if(highlightPlaying||Date.now()<alertUntil)return;if(games.length>1){idx=(idx+1)%games.length;activeId=null;render()}}
 document.addEventListener("keydown",e=>{if(["ArrowRight"," "].includes(e.key)){e.preventDefault();rotate()}else if(e.key==="ArrowLeft"){e.preventDefault();idx=(idx-1+games.length)%Math.max(1,games.length);activeId=null;render()}else if(e.key.toLowerCase()==="r")refresh()});
-refresh();setInterval(refresh,POLL);setInterval(rotate,ROTATE);
+refresh();setInterval(refresh,POLL);setInterval(rotate,ROTATE);setInterval(renderPenaltyClocks,1000);setInterval(pollLiveGoalHighlights,HIGHLIGHT_POLL_MS);setTimeout(pollLiveGoalHighlights,5000);
 </script>
 </body></html>
